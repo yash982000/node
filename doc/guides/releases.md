@@ -883,11 +883,11 @@ judgment there.
 
 ### Snap
 
-The Node.js [Snap] package has a "default" for installs where the user hasn't
+The Node.js [Snap][] package has a "default" for installs where the user hasn't
 specified a release line ("track" in Snap terminology). This should be updated
 to point to the most recently activated LTS. A member of the Node.js Build
 Infrastructure team is able to perform the switch of the default. An issue
-should be opened on the [Node.js Snap management repository] requesting this
+should be opened on the [Node.js Snap management repository][] requesting this
 take place once a new LTS line has been released.
 
 [Build issue tracker]: https://github.com/nodejs/build/issues/new
