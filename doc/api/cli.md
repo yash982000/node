@@ -80,7 +80,7 @@ $ node --completion-bash > node_bash_completion
 $ source node_bash_completion
 ```
 
-### `--conditions=condition`
+### `-C=condition`, `--conditions=condition`
 <!-- YAML
 added:
   - v14.9.0
@@ -89,13 +89,19 @@ added:
 
 > Stability: 1 - Experimental
 
-Enable experimental support for custom conditional exports resolution
+Enable experimental support for custom [conditional exports][] resolution
 conditions.
 
 Any number of custom string condition names are permitted.
 
 The default Node.js conditions of `"node"`, `"default"`, `"import"`, and
 `"require"` will always apply as defined.
+
+For example, to run a module with "development" resolutions:
+
+```console
+$ node -C=development app.js
+```
 
 ### `--cpu-prof`
 <!-- YAML
@@ -210,7 +216,9 @@ modifying the stack trace.
 
 ### `--experimental-abortcontroller`
 <!-- YAML
-added: v15.0.0
+added:
+  - v15.0.0
+  - v14.17.0
 changes:
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/33527
@@ -1368,7 +1376,7 @@ node --require "./a.js" --require "./b.js"
 
 Node.js options that are allowed are:
 <!-- node-options-node start -->
-* `--conditions`
+* `--conditions`, `-C`
 * `--diagnostic-dir`
 * `--disable-proto`
 * `--enable-fips`
@@ -1667,6 +1675,37 @@ Be aware that unless the child environment is explicitly set, this environment
 variable will be inherited by any child processes, and if they use OpenSSL, it
 may cause them to trust the same CAs as node.
 
+### `TZ`
+<!-- YAML
+added: v0.0.1
+changes:
+  - version:
+     - v16.2.0
+    pr-url: https://github.com/nodejs/node/pull/38642
+    description:
+      Changing the TZ variable using process.env.TZ = changes the timezone
+      on Windows as well.
+  - version:
+     - v13.0.0
+    pr-url: https://github.com/nodejs/node/pull/20026
+    description:
+      Changing the TZ variable using process.env.TZ = changes the timezone
+      on POSIX systems.
+-->
+
+The `TZ` environment variable is used to specify the timezone configuration.
+
+While the Node.js support for `TZ` will not handle all of the various
+[ways that `TZ` is handled in other environments][], it will support basic
+[timezone IDs][] (such as `'Etc/UTC'`, `'Europe/Paris'` or `'America/New_York'`.
+It may support a few other abbreviations or aliases, but these are strongly
+discouraged and not guaranteed.
+
+```console
+$ TZ=Europe/Dublin node -pe "new Date().toString()"
+Wed May 12 2021 20:30:48 GMT+0100 (Irish Standard Time)
+```
+
 ### `UV_THREADPOOL_SIZE=size`
 
 Set the number of threads used in libuv's threadpool to `size` threads.
@@ -1733,6 +1772,7 @@ $ node --max-old-space-size=1536 index.js
 [`tls.DEFAULT_MIN_VERSION`]: tls.md#tls_tls_default_min_version
 [`unhandledRejection`]: process.md#process_event_unhandledrejection
 [`worker_threads.threadId`]: worker_threads.md#worker_threads_worker_threadid
+[conditional exports]: packages.md#packages_conditional_exports
 [context-aware]: addons.md#addons_context_aware_addons
 [customizing ESM specifier resolution]: esm.md#esm_customizing_esm_specifier_resolution_algorithm
 [debugger]: debugger.md
@@ -1741,3 +1781,5 @@ $ node --max-old-space-size=1536 index.js
 [jitless]: https://v8.dev/blog/jitless
 [libuv threadpool documentation]: https://docs.libuv.org/en/latest/threadpool.html
 [remote code execution]: https://www.owasp.org/index.php/Code_Injection
+[timezone IDs]: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+[ways that `TZ` is handled in other environments]: https://www.gnu.org/software/libc/manual/html_node/TZ-Variable.html

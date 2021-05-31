@@ -12,7 +12,7 @@
 #include "node_errors.h"
 #include "node_internals.h"
 #include "node_options-inl.h"
-#include "node_process.h"
+#include "node_process-inl.h"
 #include "node_url.h"
 #include "util-inl.h"
 #include "timer_wrap.h"
@@ -896,13 +896,6 @@ void Agent::ContextCreated(Local<Context> context, const ContextInfo& info) {
   if (client_ == nullptr)  // This happens for a main context
     return;
   client_->contextCreated(context, info);
-}
-
-bool Agent::WillWaitForConnect() {
-  if (debug_options_.wait_for_connect()) return true;
-  if (parent_handle_)
-    return parent_handle_->WaitForConnect();
-  return false;
 }
 
 bool Agent::IsActive() {

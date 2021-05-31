@@ -107,6 +107,9 @@ class Message : public MemoryRetainer {
 
  private:
   MallocedBuffer<char> main_message_buf_;
+  // TODO(addaleax): Make this a std::variant to save storage size in the common
+  // case (which is that all of these vectors are empty) once that is available
+  // with C++17.
   std::vector<std::shared_ptr<v8::BackingStore>> array_buffers_;
   std::vector<std::shared_ptr<v8::BackingStore>> shared_array_buffers_;
   std::vector<std::unique_ptr<TransferData>> transferables_;
@@ -147,9 +150,9 @@ class SiblingGroup final : public std::enable_shared_from_this<SiblingGroup> {
   size_t size() const { return ports_.size(); }
 
  private:
-  std::string name_;
+  const std::string name_;
+  RwLock group_mutex_;  // Protects ports_.
   std::set<MessagePortData*> ports_;
-  Mutex group_mutex_;
 
   static void CheckSiblingGroup(const std::string& name);
 
@@ -202,6 +205,9 @@ class MessagePortData : public TransferData {
   // This mutex protects all fields below it, with the exception of
   // sibling_.
   mutable Mutex mutex_;
+  // TODO(addaleax): Make this a std::variant<std::shared_ptr, std::unique_ptr>
+  // once that is available with C++17, because std::shared_ptr comes with
+  // overhead that is only necessary for BroadcastChannel.
   std::deque<std::shared_ptr<Message>> incoming_messages_;
   MessagePort* owner_ = nullptr;
   std::shared_ptr<SiblingGroup> group_;
